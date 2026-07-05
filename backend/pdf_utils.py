@@ -1,14 +1,20 @@
-import fitz
-import re
+import pdfplumber
 
-def extract_text(file):
-    doc = fitz.open(stream=file.read(), filetype="pdf")
+
+def extract_text_from_pdf(uploaded_file):
+    """
+    Extract text from an uploaded PDF file.
+    """
+
     text = ""
-    for page in doc:
-        text += page.get_text()
-    return text
 
-def clean_text(text):
-    text = re.sub(r'\n+', ' ', text)
-    text = re.sub(r'\s+', ' ', text)
-    return text.strip()
+    with pdfplumber.open(uploaded_file) as pdf:
+
+        for page in pdf.pages:
+
+            page_text = page.extract_text()
+
+            if page_text:
+                text += page_text + "\n"
+
+    return text
